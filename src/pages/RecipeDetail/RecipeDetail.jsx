@@ -26,21 +26,28 @@ const RecipeDetail = () => {
   }
 
   return (
-    <article className="recipe-detail">
+    // should be main not article
+    <main className="recipe-detail">
       <header>
         <button onClick={() => navigate(-1)} className="back-button">
           ← Back
         </button>
-        <h2>{recipe.strMeal}</h2>
+        <h1>{recipe.strMeal}</h1>
       </header>
 
       <section>
-        <h3><strong>Area:</strong> {recipe.strArea}</h3>
-        <img src={recipe.strMealThumb} alt={recipe.strMeal} className="recipe-image" />
+        <h2>
+          <strong>Area:</strong> {recipe.strArea}
+        </h2>
+        <img 
+          src={recipe.strMealThumb} 
+          alt={recipe.strMeal} 
+          className="recipe-image" 
+        />
       </section>
 
       <section>
-        <h3>Ingredients</h3>
+        <h2>Ingredients</h2>
         <ul>
           {Array.from({ length: 20 }, (_, i) => i + 1)
             .map((i) => recipe[`strIngredient${i}`]?.trim())
@@ -52,10 +59,10 @@ const RecipeDetail = () => {
       </section>
 
       <section>
-        <h3>Instructions</h3>
+        <h2>Instructions</h2>
         <p>{recipe.strInstructions}</p>
       </section>
-    </article>
+    </main>
   );
 };
 

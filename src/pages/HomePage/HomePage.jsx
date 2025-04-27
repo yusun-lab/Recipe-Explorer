@@ -16,26 +16,65 @@ const HomePage = () => {
   }, []);
 
   const fetchRandomRecipes = async () => {
-    let fetchedRecipes = [];
-    for (let i = 0; i < 6; i++) {
-      const response = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
-      const data = await response.json();
-      fetchedRecipes.push(data.meals[0]);
+    // let fetchedRecipes = [];
+    // for (let i = 0; i < 6; i++) {
+    //   const response = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
+    //   const data = await response.json();
+    //   fetchedRecipes.push(data.meals[0]);
+
+    // error handling with try/catch
+    try {
+      let fetchedRecipes = [];
+      for (let i = 0; i < 6; i++) {
+        const response = await fetch(
+          "https://www.themealdb.com/api/json/v1/1/random.php"
+        );
+        // Check if the response is ok (status code 200-299)
+        if (!response.ok) {
+          throw new Error("Failed to fetch random recipes");
+        }
+        const data = await response.json();
+        fetchedRecipes.push(data.meals[0]);
+      }
+      setRecipes(fetchedRecipes);
+    } catch (error) {
+      console.error("Error fetching random recipes:", error);      
     }
-    setRecipes(fetchedRecipes);
   };
+  
 
   const handleSearch = async (query, type) => {
     let url = "";
-    if (type === "name") {
-      url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
-    } else if (type === "ingredient") {
-      url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`;
-    } else if (type === "letter" && query.length === 1) {
-      url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${query}`;
-    } else {
-      alert("For first letter search, enter only one letter!");
-      return;
+    // if (type === "name") {
+    //   url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+    // } else if (type === "ingredient") {
+    //   url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`;
+    // } else if (type === "letter" && query.length === 1) {
+    //   url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${query}`;
+    // } else {
+    //   alert("For first letter search, enter only one letter!");
+    //   return;
+    // }
+
+    // for better readability, use a switch statement
+    switch (type) {
+      case "name":
+        url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+        break;
+      case "ingredient":
+        url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`;
+        break;
+      case "letter":
+        if (query.length === 1) {
+          url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${query}`;
+        } else {
+          alert("For first letter search, enter only one letter!");
+          return  
+        }
+        break;
+      default:
+        alert("Invalid search type!");
+        return;
     }
 
     const response = await fetch(url);
@@ -51,19 +90,36 @@ const HomePage = () => {
       return;
     }
 
+  //   const url = `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`;
+  //   const response = await fetch(url);
+  //   const data = await response.json();
+  //   setRecipes(data.meals || []);
+  //   setShowSearchBar(false);
+  //   setShowBackButton(true); // Show back button when category is selected
+  // };
+
+  // try/catch for error handling
+  try {
     const url = `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`;
     const response = await fetch(url);
+    // Check if the response is ok (status code 200-299)
+    if (!response.ok) {
+      throw new Error("Failed to fetch recipes by category");
+    }
     const data = await response.json();
     setRecipes(data.meals || []);
-    setShowSearchBar(false);
+    setShowSearchBar(false); // Hide search bar when category is selected
     setShowBackButton(true); // Show back button when category is selected
-  };
+  } catch (error) {
+    console.error("Error fetching recipes by category:", error);    
+  }
+};
 
   const handleBack = () => {
     setShowCategoryFilter(true); // Show category filter again
     setShowSearchBar(true); // Show search bar again
     setShowBackButton(false); // Hide back button
-  }
+  };
 
   return (
     <main className="homepage">
